@@ -182,7 +182,7 @@ export default function Editor({ initial, onSaved, onBack, onDuplicate }) {
 
       {!wide && (
         <nav className="tabbar">
-          {[['edit', 'edit', 'Questions'], ['design', 'palette', 'Design'], ['preview', 'eye', 'Preview']].map(([k, ic, l]) => (
+          {[['edit', 'edit', 'Questions'], ['preview', 'eye', 'Preview'], ['design', 'palette', 'Design']].map(([k, ic, l]) => (
             <button type="button" key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}><Icon n={ic} size={22} /><span>{l}</span></button>
           ))}
         </nav>
