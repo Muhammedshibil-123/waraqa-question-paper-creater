@@ -33,7 +33,7 @@ export async function buildDocx(doc, { answers = false } = {}) {
     return splitBlanks(text).map((p) => {
       if (!p.blank) return run(p.text, { rtl: dir === 'rtl' });
       const a = ans[bi++];
-      return a ? run(` ${a} `, { rtl: dir === 'rtl', color: RED, bold: true }) : run(DOTS, { rtl: dir === 'rtl' });
+      return a ? run(` ${a} `, { rtl: dir === 'rtl', color: RED, bold: true }) : run(p.units > 4 ? '…'.repeat(Math.round(p.units * 1.25)) : DOTS, { rtl: dir === 'rtl' });
     });
   };
   const lines = (n) => Array.from({ length: +n || 0 }, () => para([run(' ')], { border: { bottom: { style: s.blank === 'line' ? BorderStyle.SINGLE : BorderStyle.DOTTED, size: 6, color: '333333', space: 1 } }, indent: { start: 600 }, spacing: { after: 60 } }));

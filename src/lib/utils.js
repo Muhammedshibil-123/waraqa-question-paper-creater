@@ -59,8 +59,13 @@ export function fmtMarks(m, numeral) {
 
 const BLANK_SPLIT = /(_{2,}|\.{4,}|…+)/;
 const BLANK_ONLY = /^(_{2,}|\.{4,}|…+)$/;
+/** blank length in "underscore units" — longer ____ in the editor gives a longer blank on paper */
+const blankUnits = (p) => (p[0] === '_' ? p.length : p[0] === '.' ? p.length / 2 : p.length * 1.5);
 export function splitBlanks(text) {
-  return String(text || '').split(BLANK_SPLIT).filter((p) => p !== '').map((p) => ({ blank: BLANK_ONLY.test(p), text: p }));
+  return String(text || '').split(BLANK_SPLIT).filter((p) => p !== '').map((p) => {
+    const blank = BLANK_ONLY.test(p);
+    return blank ? { blank, text: p, units: blankUnits(p) } : { blank, text: p };
+  });
 }
 export const hasBlank = (t) => BLANK_SPLIT.test(t || '');
 

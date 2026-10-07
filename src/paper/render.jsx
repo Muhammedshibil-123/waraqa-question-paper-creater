@@ -9,8 +9,10 @@ const LABELS = {
 };
 export const labelsFor = (s) => LABELS[s.labels === 'ar' ? 'ar' : 'en'];
 
-export function Blank({ ans, wide }) {
-  return <span className={'bl' + (wide ? ' wide' : '') + (ans ? ' ans' : '')}>{ans || '\u00a0'}</span>;
+export function Blank({ ans, wide, units }) {
+  // 4 underscores = default width; each extra one makes the blank longer
+  const style = units > 4 && !wide ? { minWidth: `${(units * 1.35).toFixed(2)}em` } : undefined;
+  return <span className={'bl' + (wide ? ' wide' : '') + (ans ? ' ans' : '')} style={style}>{ans || '\u00a0'}</span>;
 }
 
 /** text with ____ blanks; answers (split by / or ،) fill blanks in order when showing the key */
@@ -18,7 +20,8 @@ export function Rich({ text, answer, showAns, forceBlank, blankAtStart }) {
   const parts = splitBlanks(text);
   const answers = showAns && answer ? String(answer).split(/\s*[\/،]\s*/) : [];
   let bi = 0;
-  const out = parts.map((p, i) => (p.blank ? <Blank key={i} ans={answers[bi++] || (showAns && bi === 1 ? answer : '')} /> : <React.Fragment key={i}>{p.text}</React.Fragment>));
+  // text keeps every space/newline the teacher typed (see .rt in paper.css)
+  const out = parts.map((p, i) => (p.blank ? <Blank key={i} units={p.units} ans={answers[bi++] || (showAns && bi === 1 ? answer : '')} /> : <span key={i} className="rt">{p.text}</span>));
   if (forceBlank && !hasBlank(text)) {
     const b = <Blank key="fb" ans={showAns ? answer : ''} />;
     return blankAtStart ? <>{b} {out}</> : <>{out} {b}</>;
@@ -286,7 +289,7 @@ function renderSection(sec, ctx) {
       body = items.map((x, i) => {
         const d = detectDir(x.text, dir);
         if (sec.mode === 'sentences') {
-          return <div key={x.id} className="it" dir={d}><span className="ord-box">{answers ? <span className="ans-mark">{d === 'rtl' ? toArabicDigits(x.answer) : x.answer}</span> : '\u00a0'}</span><span className="it-b">{x.text}</span></div>;
+          return <div key={x.id} className="it" dir={d}><span className="ord-box">{answers ? <span className="ans-mark">{d === 'rtl' ? toArabicDigits(x.answer) : x.answer}</span> : '\u00a0'}</span><span className="it-b rt">{x.text}</span></div>;
         }
         const w = String(x.text).split(/\s*\/\s*/).filter(Boolean);
         return (

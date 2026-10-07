@@ -94,7 +94,8 @@
 .it-b { flex: 1; min-width: 0; }
 .grid { display: grid; column-gap: 18px; }
 .grid .cell { min-width: 0; }
-.bl { display: inline-block; min-width: 5.5em; border-bottom: 1.4px dotted #000; line-height: 1.05; height: 1.05em; vertical-align: baseline; text-align: center; }
+.rt { white-space: break-spaces; } /* keep extra spaces & line breaks typed in the editor */
+.bl { display: inline-block; min-width: 5.5em; max-width: 100%; border-bottom: 1.4px dotted #000; line-height: 1.05; height: 1.05em; vertical-align: baseline; text-align: center; }
 .bl.wide { min-width: 14em; }
 .w-row { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: .25em; }
 .w-row .bl { flex: 1; min-width: 4.5em; }
