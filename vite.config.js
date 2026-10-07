@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
             registerType: 'autoUpdate',
             injectRegister: false,
             includeAssets: ['icon.svg', 'apple-touch-icon.png'],
-            workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], maximumFileSizeToCacheInBytes: 6 * 1024 * 1024 },
+            workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, navigateFallbackDenylist: [/^\/api\//, /^\/mcp/] },
             manifest: {
               name: 'Waraqa – Question paper maker',
               short_name: 'Waraqa',

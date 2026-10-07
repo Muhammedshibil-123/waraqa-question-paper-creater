@@ -22,6 +22,27 @@ The PWA needs HTTPS hosting. Any static host works:
 
 Open the site on the phone in Chrome → menu (⋮) → *Install app*. On iPhone: Safari → Share → *Add to Home Screen*.
 
+## Connect to ChatGPT / Claude (MCP connector)
+
+A teacher uploads a photo of questions to ChatGPT or Claude and asks for a paper. The AI calls the Waraqa connector,
+which saves the paper for 30 days and returns a short link (`…/#/import/<id>`). Opening the link loads the paper
+into Waraqa on that device, ready to check and download as PDF. Papers are still stored only on the device; the
+connector keeps nothing but those 30-day links. Needs internet.
+
+It runs on the same Vercel project as the app: `api/mcp.js` is the connector and `api/paper/[id].js` serves the links.
+Set up once:
+
+1. Vercel dashboard → the project → **Storage** → *Create* → **Upstash for Redis** (free plan) → connect it to the project.
+   This adds the `KV_REST_API_URL` / `KV_REST_API_TOKEN` variables the connector uses.
+2. Redeploy (push to GitHub, or *Deployments → Redeploy*).
+3. Connector URL: `https://<your-site>.vercel.app/api/mcp`
+
+- **Claude**: Settings → Connectors → *Add custom connector* → paste the connector URL.
+- **ChatGPT** (paid plan, on chatgpt.com): Settings → Apps & Connectors → Advanced settings → turn on *Developer mode*,
+  then *Create*: name `Waraqa`, MCP server URL as above, authentication *No authentication*.
+
+Locally, `npx vercel dev` runs the app and the connector together (papers are kept in memory when Redis is not set).
+
 ## What is inside
 
 | Folder | What it does |
@@ -36,6 +57,8 @@ Open the site on the phone in Chrome → menu (⋮) → *Install app*. On iPhone
 | `src/export/docx.js` | Editable Word export with right-to-left paragraphs |
 | `src/ui/ArabicKeyboard.jsx` | On-screen Arabic keyboard with harakat, digits and a blank key |
 | `src/lib/db.js` | IndexedDB storage, backup and restore |
+| `src/lib/fromSpec.js` | Turns a paper sent by the AI connector into a Waraqa paper |
+| `server/` | The MCP connector (`mcp.js`) and the Cloudflare Worker entry (`worker.js`) |
 
 ## Adding a template
 

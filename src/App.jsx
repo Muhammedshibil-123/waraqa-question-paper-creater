@@ -7,6 +7,7 @@ import { Icon, IconBtn, Btn, Sheet, Menu, TextInput, Seg, Row, NumInput, Confirm
 import { TEMPLATES, makePaper } from './lib/templates';
 import { MODEL } from './lib/models';
 import { db, exportAll, importAll, askPersistence, storageInfo } from './lib/db';
+import { paperFromSpec } from './lib/fromSpec';
 import { uid, clone, timeAgo, readFileAsText, loadImage, detectDir } from './lib/utils';
 import { shareOrDownload } from './export/stage';
 
@@ -339,6 +340,36 @@ function Home({ docs, refresh, onOpen, profile, setProfile }) {
   );
 }
 
+/* ---------------- open a paper sent by ChatGPT / Claude (#/import/<id>) ---------------- */
+function Importer({ id, docs, profile, refresh }) {
+  const [err, setErr] = useState(null);
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const done = docs.find((d) => d.importId === id);
+      if (done) { location.replace('#/paper/' + done.id); return; }
+      try {
+        const res = await fetch(new URL('api/paper/' + id, location.href), { cache: 'no-store' });
+        if (res.status === 404) throw new Error('This link has expired or is not complete. Ask the AI to make the paper again.');
+        if (!res.ok) throw new Error('The paper could not be loaded. Try again in a moment.');
+        const d = paperFromSpec((await res.json()).spec || {}, { profile, importId: id });
+        await db.put('docs', d);
+        await refresh();
+        if (live) location.replace('#/paper/' + d.id);
+      } catch (e) {
+        if (live) setErr(navigator.onLine === false ? 'You are offline. Connect to the internet and open the link again.' : e.message);
+      }
+    })();
+    return () => { live = false; };
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className="boot">
+      <span className="brand-mark">ورقة</span>
+      {err ? <><p>{err}</p><Btn kind="primary" onClick={() => go('/')}>Go to my papers</Btn></> : <p>Opening your paper…</p>}
+    </div>
+  );
+}
+
 /* ---------------- root ---------------- */
 function Root() {
   const route = useRoute();
@@ -358,6 +389,7 @@ function Root() {
   if (!docs) return <div className="boot"><span className="brand-mark">ورقة</span></div>;
   const current = route.id && docs.find((d) => d.id === route.id);
 
+  if (route.view === 'import' && route.id) return <Importer key={route.id} id={route.id} docs={docs} profile={profile} refresh={refresh} />;
   if ((route.view === 'paper' || route.view === 'sheet') && !current) {
     return <div className="boot"><p>This paper is not on this phone.</p><Btn kind="primary" onClick={() => go('/')}>Go to my papers</Btn></div>;
   }
