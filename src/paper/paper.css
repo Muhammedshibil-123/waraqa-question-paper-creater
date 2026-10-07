@@ -151,7 +151,14 @@
 
 /* ---------- scaled preview ---------- */
 .scaled { display: flex; flex-direction: column; align-items: center; gap: var(--gap); }
-.scaled > .page { zoom: var(--scale); }
+/* Lay pages out at full A4 size (exactly like the PDF export) and only shrink the picture.
+   `zoom` would re-lay the text at a smaller font size, which moves line breaks. Negative margins
+   shrink the layout box to the scaled size so nothing overflows. */
+.scaled > .page {
+  transform: scale(var(--scale));
+  transform-origin: top center;
+  margin: 0 calc(794px * (var(--scale) - 1) / 2) calc(1123px * (var(--scale) - 1));
+}
 
 /* ---------- thumbnail ---------- */
 .thumb { position: relative; width: 100%; aspect-ratio: 794 / 1123; overflow: hidden; background: #fff; }

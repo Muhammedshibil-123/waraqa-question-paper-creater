@@ -367,7 +367,7 @@ details.sub summary { font-weight: 600; font-size: 13.5px; cursor: pointer; }
   :root { padding: 0 !important; }
   body > *:not(.print-host) { display: none !important; }
   .print-host { display: block !important; }
-  .print-host .page { box-shadow: none !important; page-break-after: always; break-after: page; zoom: 1 !important; }
+  .print-host .page { box-shadow: none !important; page-break-after: always; break-after: page; zoom: 1 !important; transform: none !important; margin: 0 !important; }
   .print-host .measurer { display: none !important; }
 }
 
