@@ -12,11 +12,23 @@ async function waitAssets(root) {
   await frames(3);
 }
 
+/**
+ * html-to-image rounds every font-size down (floor(px) - 0.1) when it copies styles, so text in the
+ * export is a little narrower than the preview and lines wrap differently (spaces typed to push text
+ * to the next line stop working). Pin the exact size inline and keep the library away from font-size.
+ */
+const STYLE_PROPS = () => Array.from(window.getComputedStyle(document.documentElement)).filter((p) => p !== 'font-size');
+function pinFontSizes(root) {
+  root.querySelectorAll('.page, .page *').forEach((el) => { if (el.style) el.style.fontSize = window.getComputedStyle(el).fontSize; });
+}
+
 async function capture(root, { pixelRatio = 2, onProgress } = {}) {
   const { toJpeg, getFontEmbedCSS } = await import('html-to-image');
   const pages = Array.from(root.querySelectorAll('.page'));
-  const fontEmbedCSS = await getFontEmbedCSS(pages[0]).catch(() => undefined);
-  const opts = { quality: 0.93, pixelRatio, backgroundColor: '#ffffff', fontEmbedCSS, width: 794, height: 1123, style: { boxShadow: 'none', margin: '0' } };
+  pinFontSizes(root);
+  const includeStyleProperties = STYLE_PROPS();
+  const fontEmbedCSS = await getFontEmbedCSS(pages[0], { includeStyleProperties }).catch(() => undefined);
+  const opts = { quality: 0.93, pixelRatio, backgroundColor: '#ffffff', fontEmbedCSS, includeStyleProperties, width: 794, height: 1123, style: { boxShadow: 'none', margin: '0' } };
   if (isIOS) { try { await toJpeg(pages[0], opts); } catch { /* warm-up for Safari */ } }
   const out = [];
   for (let i = 0; i < pages.length; i++) {
