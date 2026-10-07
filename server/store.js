@@ -1,11 +1,17 @@
 /* Where AI-made papers wait (30 days) until the link is opened.
    Production: Upstash Redis REST API. Adding "Upstash for Redis" from the Vercel Marketplace sets
-   KV_REST_API_URL / KV_REST_API_TOKEN (UPSTASH_REDIS_REST_* also work).
+   <PREFIX>_REST_API_URL / <PREFIX>_REST_API_TOKEN (KV_ by default; UPSTASH_REDIS_REST_* also work).
    Local runs without those keep papers in memory. */
 const mem = new Map();
+const find = (...suffixes) => {
+  for (const s of suffixes) {
+    const k = Object.keys(process.env).find((name) => name.endsWith(s) && !name.includes('READ_ONLY'));
+    if (k) return process.env[k];
+  }
+};
 const env = () => ({
-  url: process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN,
+  url: process.env.KV_REST_API_URL || find('_REST_API_URL', 'UPSTASH_REDIS_REST_URL'),
+  token: process.env.KV_REST_API_TOKEN || find('_REST_API_TOKEN', 'UPSTASH_REDIS_REST_TOKEN'),
 });
 
 async function redis(cmd) {
