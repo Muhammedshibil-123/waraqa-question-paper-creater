@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MODELS, MODEL, newSection } from '../lib/models';
+import { MODELS, MODEL, newSection, isPlain } from '../lib/models';
 import { TypeEditor } from './TypeEditors';
 import { TextInput, Stepper, Btn, IconBtn, Icon, Sheet, Row, Confirm, useToast } from '../ui/kit';
 import { detectDir, sectionLabel, fmtMarks, uid, clone } from '../lib/utils';
@@ -10,14 +10,14 @@ function SectionCard({ s, label, open, onToggle, set, onMove, onDup, onDel, onBa
   const dir = detectDir(s.title, settings.dir);
   const count = s.items ? s.items.length : null;
   const [confirm, setConfirm] = useState(false);
-  const plain = s.type === 'pagebreak';
+  const plain = isPlain(s.type);
   return (
     <div className={'sec' + (open ? ' open' : '') + (s.hidden ? ' hidden' : '') + (plain ? ' brk' : '')} id={'sec-' + s.id}>
       <button type="button" className="sec-h" onClick={onToggle} aria-expanded={open}>
-        <span className="sec-lbl">{label || (s.type === 'text' ? '¶' : s.type === 'pagebreak' ? '⤓' : '•')}</span>
+        <span className="sec-lbl">{label || (s.type === 'text' ? '¶' : s.type === 'pagebreak' ? '⤓' : s.type === 'linebreak' ? '↵' : '•')}</span>
         <span className="sec-tt">
           <small>{m.name}{count !== null ? `, ${count} ${count === 1 ? 'line' : 'lines'}` : ''}{s.hidden ? ', hidden' : ''}</small>
-          <span className="sec-title" dir={dir}>{s.title || s.body || (plain ? 'New page starts here' : 'Untitled')}</span>
+          <span className="sec-title" dir={dir}>{s.title || s.body || (s.type === 'pagebreak' ? 'New page starts here' : s.type === 'linebreak' ? `Empty space, ${s.lines ?? 1} ${(s.lines ?? 1) === 1 ? 'line' : 'lines'}` : 'Untitled')}</span>
         </span>
         {s.marks !== '' && s.marks !== undefined && !plain && <span className="sec-mk">{fmtMarks(s.marks)}</span>}
         <Icon n={open ? 'chevU' : 'chevD'} size={18} className="sec-chev" />
@@ -61,7 +61,7 @@ export function SectionList({ doc, update, openId, setOpenId, onAdd }) {
   const s = doc.settings;
   const secs = doc.sections;
   let n = 0;
-  const labels = secs.map((x) => (x.hidden || x.type === 'text' || x.type === 'pagebreak' ? '' : sectionLabel(n++, s.secNum === 'none' ? 'number' : s.secNum, detectDir(x.title, s.dir))));
+  const labels = secs.map((x) => (x.hidden || x.type === 'text' || isPlain(x.type) ? '' : sectionLabel(n++, s.secNum === 'none' ? 'number' : s.secNum, detectDir(x.title, s.dir))));
 
   const setSec = (id, patch) => update((d) => { d.sections = d.sections.map((x) => (x.id === id ? { ...x, ...patch } : x)); }, 'sec:' + id + ':' + Object.keys(patch).join());
   const move = (i, dlt) => update((d) => {

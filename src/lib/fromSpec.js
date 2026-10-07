@@ -1,5 +1,5 @@
 import { uid } from './utils';
-import { MODEL, parseBulk, totalMarks } from './models';
+import { MODEL, parseBulk, totalMarks, isPlain } from './models';
 import { TEMPLATES, makePaper } from './templates';
 
 /* Turns the simple paper an AI sends through the connector (server/mcp.js) into a full Waraqa paper.
@@ -28,7 +28,7 @@ function item(type, x) {
 function section(s) {
   const m = s && MODEL[s.type];
   if (!m || s.type === 'picture') return null;
-  const out = { id: uid(), type: s.type, hidden: false, marks: s.type === 'text' || s.type === 'pagebreak' ? '' : 4, ...m.make() };
+  const out = { id: uid(), type: s.type, hidden: false, marks: s.type === 'text' || isPlain(s.type) ? '' : 4, ...m.make() };
   for (const [k, def] of Object.entries(out)) {
     if (['id', 'type', 'hidden', 'items', 'image'].includes(k) || s[k] == null) continue;
     const v = s[k];

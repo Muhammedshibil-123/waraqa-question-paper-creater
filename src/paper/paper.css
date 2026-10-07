@@ -28,6 +28,7 @@
 .ck-sec { padding-top: var(--gap); }
 .ck-item { padding-top: var(--igap); }
 .ck-hdr { padding-bottom: 2px; }
+.lbrk { height: calc(var(--fs) * var(--lh) * var(--n, 1)); }
 .body-c { padding-top: var(--igap); }
 
 /* ---------- header ---------- */

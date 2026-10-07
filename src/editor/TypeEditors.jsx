@@ -297,6 +297,8 @@ export function TypeEditor({ s, set }) {
       );
     case 'pagebreak':
       return <p className="muted">Questions after this start on a new page.</p>;
+    case 'linebreak':
+      return <Row label="Space" hint="empty lines"><Stepper value={s.lines ?? 1} step={0.5} min={0.5} max={20} onChange={(v) => set({ lines: v })} /></Row>;
     default:
       return null;
   }

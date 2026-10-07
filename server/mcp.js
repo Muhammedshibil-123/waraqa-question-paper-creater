@@ -7,7 +7,7 @@ const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 const TTL_SECONDS = 60 * 60 * 24 * 30;
 const MAX_BYTES = 256 * 1024;
 
-export const TYPES = ['choose', 'fill', 'words', 'short', 'match', 'truefalse', 'arrange', 'translate', 'passage', 'poem', 'dialogue', 'table', 'colour', 'text', 'pagebreak'];
+export const TYPES = ['choose', 'fill', 'words', 'short', 'match', 'truefalse', 'arrange', 'translate', 'passage', 'poem', 'dialogue', 'table', 'colour', 'text', 'pagebreak', 'linebreak'];
 const TEMPLATES = ['half-yearly', 'periodic', 'annual', 'junior', 'boxed', 'english'];
 
 const SECTION_GUIDE = `Questions of the paper, in order. Each section is one numbered question with its own instruction (title) and marks.
@@ -28,6 +28,7 @@ Section types and the fields they use:
 - colour: young classes colour the circle. items: [{label: "أحمر"}].
 - text: un-numbered note or instructions. "body": "Answer all the questions." (no marks).
 - pagebreak: start a new page.
+- linebreak: empty space between questions. "lines": how many empty lines (default 1).
 Section marks are numbers (2.5 allowed). They should add up to the header's total marks.`;
 
 export const TOOLS = [

@@ -93,6 +93,7 @@ export async function buildDocx(doc, { answers = false } = {}) {
   let counter = 1;
   for (const sec of doc.sections.filter((x) => !x.hidden)) {
     if (sec.type === 'pagebreak') { out.push(new Paragraph({ children: [new PageBreak()] })); continue; }
+    if (sec.type === 'linebreak') { out.push(para([run('')], { spacing: { before: 0, after: 0, line: Math.round(spacing.line * (+sec.lines || 1)) } })); continue; }
     const hd = detectDir(sec.title || sec.body, s.dir);
     if (sec.type === 'text') {
       if (sec.title) out.push(para([run(sec.title, { bold: true, size: head, rtl: hd === 'rtl' })], { dir: hd }));

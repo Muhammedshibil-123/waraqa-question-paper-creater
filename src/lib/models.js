@@ -222,13 +222,25 @@ export const MODELS = [
     make: () => ({ title: '', marks: '' }),
     presets: [],
   },
+  {
+    type: 'linebreak',
+    name: 'Line break',
+    ar: 'سطر فارغ',
+    sample: '— empty line —',
+    help: 'Adds empty space between questions. Choose how many lines of space.',
+    make: () => ({ title: '', marks: '', lines: 1 }),
+    presets: [],
+  },
 ];
+
+/** layout-only blocks: no title, no marks, no number */
+export const isPlain = (type) => type === 'pagebreak' || type === 'linebreak';
 
 export const MODEL = Object.fromEntries(MODELS.map((m) => [m.type, m]));
 
 export function newSection(type, preset) {
   const m = MODEL[type];
-  const base = { id: uid(), type, marks: type === 'text' || type === 'pagebreak' ? '' : 4, hidden: false, ...m.make() };
+  const base = { id: uid(), type, marks: type === 'text' || isPlain(type) ? '' : 4, hidden: false, ...m.make() };
   if (preset) {
     base.title = preset.title;
     if (preset.patch) Object.assign(base, JSON.parse(JSON.stringify(preset.patch)));
@@ -289,7 +301,7 @@ export function parseBulk(type, raw) {
 
 /* how many "questions" a section contributes to continuous numbering */
 export function itemCount(s) {
-  if (['text', 'pagebreak', 'table', 'picture', 'colour'].includes(s.type)) return s.type === 'colour' ? 0 : 0;
+  if (['text', 'pagebreak', 'linebreak', 'table', 'picture', 'colour'].includes(s.type)) return s.type === 'colour' ? 0 : 0;
   if (s.type === 'passage') return (s.items || []).length + (s.starter || s.rewriteLines ? 1 : 0);
   if (s.type === 'poem' || s.type === 'dialogue') return 0;
   return (s.items || []).length;

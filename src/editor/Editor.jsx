@@ -4,7 +4,7 @@ import { HeaderPanel, DesignPanel } from './Panels';
 import { PaperPages, ScaledPages } from '../paper/Pager';
 import { ExportStage, shareOrDownload } from '../export/stage';
 import { Icon, IconBtn, Btn, Sheet, Toggle, useToast, useKbd, Stepper, TextInput } from '../ui/kit';
-import { totalMarks } from '../lib/models';
+import { totalMarks, isPlain } from '../lib/models';
 import { clone, downloadBlob, safeName, fmtMarks, detectDir, uid } from '../lib/utils';
 import { db } from '../lib/db';
 
@@ -211,7 +211,7 @@ export default function Editor({ initial, onSaved, onBack, onDuplicate }) {
           {diff === 0 ? `All questions add up to ${fmtMarks(target)}. ` : diff > 0 ? `Questions add up to ${fmtMarks(total)}, that is ${fmtMarks(diff)} more than ${fmtMarks(target)}.` : `Questions add up to ${fmtMarks(total)}, ${fmtMarks(-diff)} less than ${fmtMarks(target)}.`}
         </p>
         <div className="marks-list">
-          {doc.sections.filter((x) => x.type !== 'pagebreak' && x.type !== 'text').map((x) => (
+          {doc.sections.filter((x) => !isPlain(x.type) && x.type !== 'text').map((x) => (
             <div key={x.id} className={'marks-row' + (x.hidden ? ' hidden' : '')}>
               <span dir={detectDir(x.title)}>{x.title || 'Untitled'}</span>
               <Stepper value={x.marks} step={0.5} min={0} onChange={(v) => update((d) => { d.sections.find((y) => y.id === x.id).marks = v; }, 'mk:' + x.id)} />

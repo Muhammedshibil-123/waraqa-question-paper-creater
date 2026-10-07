@@ -167,7 +167,7 @@ function Heading({ sec, label, s }) {
       {pos === 'above' && mt && <div className="sh-above">{mt}</div>}
       <div className="sh-row">
         {label && <span className="sh-num">{label}</span>}
-        <span className="sh-title">{sec.title}{pos === 'inline' && mt ? <span className="sh-mk-in">{'  '}{mt}</span> : null}</span>
+        <span className="sh-title rt">{sec.title}{pos === 'inline' && mt ? <span className="sh-mk-in">{'  '}{mt}</span> : null}</span>
         {pos === 'end' && mt && <span className="sh-mk">{mt}</span>}
       </div>
       {pos === 'below' && mt && <div className="sh-below">{mt}</div>}
@@ -417,6 +417,7 @@ export function buildChunks(doc, { answers = false } = {}) {
   let counter = 1;
   (doc.sections || []).filter((x) => !x.hidden).forEach((sec) => {
     if (sec.type === 'pagebreak') { chunks.push({ key: sec.id, brk: true }); return; }
+    if (sec.type === 'linebreak') { chunks.push({ key: sec.id, el: <div className="lbrk" style={{ '--n': +sec.lines || 1 }} /> }); return; }
     if (sec.type === 'text') {
       const d = detectDir(sec.body || sec.title, s.dir);
       chunks.push({
